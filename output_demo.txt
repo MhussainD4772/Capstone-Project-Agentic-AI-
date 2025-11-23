@@ -1,0 +1,199 @@
+Running QA Sentinel pipeline...
+Session ID: session-demo-1
+Title: User updates profile information
+
+
+================================================================================
+Pipeline Results:
+================================================================================
+{
+  "session_id": "session-demo-1",
+  "title": "User updates profile information",
+  "qa_context": "Focus on negative testing, usability, and boundary behavior.",
+  "planner_output": {
+    "features": [
+      "Profile Information Update - Name",
+      "Profile Information Update - Email",
+      "Profile Information Update - Validation"
+    ],
+    "scenarios": [
+      {
+        "scenario_id": "SC-1",
+        "title": "Update Profile Name Successfully",
+        "acceptance_criteria": "User can update their name",
+        "tags": [
+          "profile",
+          "name",
+          "positive"
+        ]
+      },
+      {
+        "scenario_id": "SC-2",
+        "title": "Update Profile Email Successfully",
+        "acceptance_criteria": "User can update their email",
+        "tags": [
+          "profile",
+          "email",
+          "positive"
+        ]
+      },
+      {
+        "scenario_id": "SC-3",
+        "title": "Attempt to Update Email with Invalid Format",
+        "acceptance_criteria": "User receives validation error for invalid email format",
+        "tags": [
+          "profile",
+          "email",
+          "negative",
+          "validation"
+        ]
+      }
+    ],
+    "notes": [
+      "Consider boundary value analysis for name fields (e.g., minimum and maximum allowed lengths).",
+      "Consider testing for XSS vulnerabilities in name and email fields.",
+      "Ensure error messages are user-friendly and informative.",
+      "Test different browsers and devices.",
+      "Verify that updated information is displayed correctly in all relevant areas of the application.",
+      "Test database updates to ensure data integrity and accuracy."
+    ],
+    "acceptance_criteria_input": [
+      "User can update their name",
+      "User can update their email",
+      "User receives validation error for invalid email format"
+    ]
+  },
+  "testcase_output": {
+    "test_cases": [
+      {
+        "id": "TC-1",
+        "title": "SC-1: Successfully Update Profile Name",
+        "preconditions": [
+          "User is logged in"
+        ],
+        "steps": [
+          "Given I am on the profile page",
+          "When I enter a new valid name in the name field",
+          "And I click the update button",
+          "Then I should see a success message"
+        ],
+        "expected_result": "The profile name is updated in the database and reflected on the profile page."
+      },
+      {
+        "id": "TC-2",
+        "title": "SC-2: Successfully Update Profile Email",
+        "preconditions": [
+          "User is logged in"
+        ],
+        "steps": [
+          "Given I am on the profile page",
+          "When I enter a new valid email in the email field",
+          "And I click the update button",
+          "Then I should see a success message"
+        ],
+        "expected_result": "The profile email is updated in the database and reflected on the profile page, user receives a verification email to new address."
+      },
+      {
+        "id": "TC-3",
+        "title": "SC-3: Attempt to Update Email with Invalid Format",
+        "preconditions": [
+          "User is logged in"
+        ],
+        "steps": [
+          "Given I am on the profile page",
+          "When I enter an invalid email format in the email field, such as 'invalid-email'",
+          "And I click the update button",
+          "Then I should see an error message indicating invalid email format"
+        ],
+        "expected_result": "An error message is displayed prompting the user to enter a valid email address, and the email field is not updated in the database."
+      }
+    ],
+    "edge_cases": [
+      {
+        "id": "EC-1",
+        "description": "Attempt to update name field with XSS payload."
+      },
+      {
+        "id": "EC-2",
+        "description": "Attempt to update email field with an email address exceeding the maximum allowed length."
+      },
+      {
+        "id": "EC-3",
+        "description": "Attempt to update profile with empty name/email fields."
+      }
+    ],
+    "bug_risks": [
+      {
+        "id": "BR-1",
+        "description": "XSS vulnerability in the name or email field."
+      },
+      {
+        "id": "BR-2",
+        "description": "Data corruption due to incorrect validation logic."
+      },
+      {
+        "id": "BR-3",
+        "description": "Error messages are not user-friendly or informative."
+      }
+    ],
+    "planner_output": {
+      "features": [
+        "Profile Information Update - Name",
+        "Profile Information Update - Email",
+        "Profile Information Update - Validation"
+      ],
+      "scenarios": [
+        {
+          "scenario_id": "SC-1",
+          "title": "Update Profile Name Successfully",
+          "acceptance_criteria": "User can update their name",
+          "tags": [
+            "profile",
+            "name",
+            "positive"
+          ]
+        },
+        {
+          "scenario_id": "SC-2",
+          "title": "Update Profile Email Successfully",
+          "acceptance_criteria": "User can update their email",
+          "tags": [
+            "profile",
+            "email",
+            "positive"
+          ]
+        },
+        {
+          "scenario_id": "SC-3",
+          "title": "Attempt to Update Email with Invalid Format",
+          "acceptance_criteria": "User receives validation error for invalid email format",
+          "tags": [
+            "profile",
+            "email",
+            "negative",
+            "validation"
+          ]
+        }
+      ],
+      "notes": [
+        "Consider boundary value analysis for name fields (e.g., minimum and maximum allowed lengths).",
+        "Consider testing for XSS vulnerabilities in name and email fields.",
+        "Ensure error messages are user-friendly and informative.",
+        "Test different browsers and devices.",
+        "Verify that updated information is displayed correctly in all relevant areas of the application.",
+        "Test database updates to ensure data integrity and accuracy."
+      ],
+      "acceptance_criteria_input": [
+        "User can update their name",
+        "User can update their email",
+        "User receives validation error for invalid email format"
+      ]
+    }
+  },
+  "global_validation_output": {
+    "valid": true,
+    "errors": [],
+    "warnings": []
+  }
+}
+================================================================================

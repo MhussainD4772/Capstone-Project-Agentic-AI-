@@ -6,11 +6,11 @@
 
 ## Executive Summary
 
-QA Sentinel is a production-ready multi-agent system that automates the complete QA design workflow from user story analysis to validated test case generation. The system employs three specialized agents—Story Planner, Test Case Generator, and Global Validator—orchestrated through Google ADK v1's Loop pattern, enabling autonomous, context-aware test case creation with enterprise-grade validation.
+QA Sentinel is a production-ready multi-agent system that automates the complete QA design workflow from user story analysis to validated test case generation. The system employs three specialized agents Story Planner, Test Case Generator, and Global Validator—orchestrated through Google ADK v1's Loop pattern, enabling autonomous, context-aware test case creation with enterprise grade validation.
 
-The architecture integrates long-term memory via FAISS vector similarity search, allowing the system to learn from historical QA patterns and maintain consistency across sessions. Each agent operates as an independent Loop with self-correction capabilities, while the orchestrator manages state, memory retrieval, and cross-agent validation. The system outputs structured JSON with test cases, edge cases, bug risk assessments, and validation results, ready for integration into CI/CD pipelines.
+The architecture integrates long-term memory via FAISS vector similarity search, allowing the system to learn from historical QA patterns and maintain consistency across sessions. Each agent operates as an independent Loop with self correction capabilities, while the orchestrator manages state, memory retrieval, and cross-agent validation. The system outputs structured JSON with test cases, edge cases, bug risk assessments, and validation results, ready for integration into CI/CD pipelines.
 
-Built on Google ADK v1, the system demonstrates advanced agentic AI patterns including validate-refine loops, agent-to-agent evaluation, and memory-augmented reasoning. The implementation is cloud-ready with Docker support and follows production best practices for observability, error handling, and security.
+Built on Google ADK v1, the system demonstrates advanced agentic AI patterns including validate refine loops, agent-to-agent evaluation, and memory-augmented reasoning. The implementation is cloud ready with Docker support and follows production best practices for observability, error handling, and security.
 
 ---
 

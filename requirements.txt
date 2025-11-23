@@ -1,0 +1,8 @@
+google-adk
+google-generativeai
+mcp
+faiss-cpu
+fastapi
+uvicorn
+python-dotenv
+

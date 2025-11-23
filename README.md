@@ -1,428 +1,401 @@
-<div align="center">
+# QA Sentinel: Autonomous Multi-Agent QA System
 
-# 🛡️ QA Sentinel
-
-### **Autonomous Multi-Agent QA System**
-
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![Google ADK](https://img.shields.io/badge/Google%20ADK-v1.19.0-green.svg)](https://github.com/google/generative-ai-python)
-[![Gemini](https://img.shields.io/badge/Gemini-2.0%20Flash-orange.svg)](https://ai.google.dev/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-**Enterprise-grade multi-agent system that automates the entire QA design workflow**
-
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
+**Enterprise-grade autonomous QA design system leveraging Google ADK v1, Gemini 2.0 Flash, and memory-augmented reasoning to automate test case generation from user stories.**
 
 ---
 
-</div>
+## Executive Summary
 
-## 🎉 Recent Updates & Status
+QA Sentinel is a production-ready multi-agent system that automates the complete QA design workflow from user story analysis to validated test case generation. The system employs three specialized agents—Story Planner, Test Case Generator, and Global Validator—orchestrated through Google ADK v1's Loop pattern, enabling autonomous, context-aware test case creation with enterprise-grade validation.
 
-### **✅ ADK v1 Migration Complete**
+The architecture integrates long-term memory via FAISS vector similarity search, allowing the system to learn from historical QA patterns and maintain consistency across sessions. Each agent operates as an independent Loop with self-correction capabilities, while the orchestrator manages state, memory retrieval, and cross-agent validation. The system outputs structured JSON with test cases, edge cases, bug risk assessments, and validation results, ready for integration into CI/CD pipelines.
 
-The entire system has been successfully migrated to **Google ADK v1** with full compatibility:
-
-- ✅ **All agents converted** to `loop.Loop` pattern (ADK v1 standard)
-- ✅ **Compatibility layer** created (`adk_v1_compat.py`) for seamless integration
-- ✅ **Event handling** fixed with proper `author` field requirement
-- ✅ **JSON parsing** enhanced with automatic markdown code block stripping
-- ✅ **Model updated** to `gemini-2.0-flash` for better quota availability
-- ✅ **API key security** implemented with `.env` and `.gitignore` protection
-
-### **🚀 Pipeline Status: Fully Operational**
-
-The QA Sentinel pipeline is **running end-to-end successfully**:
-
-| Component | Status | Description |
-|-----------|--------|-------------|
-| **Story Planner Loop** | ✅ Working | Generates features, scenarios, and notes |
-| **Test Case Generator Loop** | ✅ Working | Creates test cases, edge cases, and bug risks |
-| **Global Validator Loop** | ✅ Working | Validates pipeline (valid: true, no errors) |
-| **Orchestrator** | ✅ Working | Coordinates all agents seamlessly |
-| **Memory System** | ✅ Working | Stores and retrieves QA patterns |
-| **JSON Parsing** | ✅ Working | Handles LLM responses with markdown stripping |
-
-### **🔧 Key Fixes Applied**
-
-1. **Markdown Code Block Stripping** - Automatically removes ```json wrappers from LLM responses
-2. **Event Creation** - Added required `author` field for ADK Event objects
-3. **Model Selection** - Switched to `gemini-2.0-flash` for optimal quota usage
-4. **Session Management** - Proper session creation before agent execution
-5. **Error Handling** - Robust JSON parsing with fallback error messages
+Built on Google ADK v1, the system demonstrates advanced agentic AI patterns including validate-refine loops, agent-to-agent evaluation, and memory-augmented reasoning. The implementation is cloud-ready with Docker support and follows production best practices for observability, error handling, and security.
 
 ---
 
-## ✨ Features
+## Key Features
 
-<div align="center">
-
-| 🎯 **Planning** | 🧪 **Test Generation** | ✅ **Validation** | 🧠 **Memory** |
-|:---:|:---:|:---:|:---:|
-| User story breakdown | Hybrid test cases | Cross-agent validation | Long-term pattern learning |
-| Scenario extraction | Edge case analysis | Quality assurance | Style memory |
-
-</div>
-
-### 🚀 Core Capabilities
-
-- ✅ **User Story Planning** - Breaks down stories into features, scenarios, and acceptance criteria
-- ✅ **Test Case Generation** - Creates hybrid manual test cases with Given/When/Then format
-- ✅ **Edge Case & Bug Risk Analysis** - Identifies potential issues and boundary conditions
-- ✅ **Global Validation** - Enterprise-grade critic ensuring cross-agent consistency
-- ✅ **Memory-Augmented Refinement** - Learns from past patterns and QA styles
-- ✅ **MCP Export Tools** - Export results as Markdown or JSON via Model Context Protocol
+- **Autonomous Story Analysis**: Breaks down user stories into structured features, scenarios, and acceptance criteria mappings
+- **Hybrid Test Case Generation**: Produces Given/When/Then format test cases with preconditions, steps, and expected results
+- **Edge Case & Bug Risk Detection**: Identifies boundary conditions, security vulnerabilities, and potential failure modes
+- **Cross-Agent Validation**: Enterprise-grade critic ensuring consistency, completeness, and quality across all agent outputs
+- **Memory-Augmented Reasoning**: FAISS-based vector similarity search for pattern learning and style consistency
+- **MCP Integration**: Model Context Protocol tools for Markdown and JSON export
+- **ADK v1 Compatible**: Fully migrated to Google ADK v1 Loop pattern with compatibility layer
+- **Production-Ready**: Comprehensive logging, tracing, error handling, and Cloud Run deployment support
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-### **Built with Modern AI Stack**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    QA Sentinel Pipeline                      │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│  │   Story      │───▶│   Test Case  │───▶│   Global    │  │
-│  │   Planner    │    │   Generator  │    │  Validator   │  │
-│  └──────────────┘    └──────────────┘    └──────────────┘  │
-│         │                   │                    │           │
-│         └───────────────────┴────────────────────┘           │
-│                            │                                  │
-│                    ┌───────▼───────┐                         │
-│                    │  Orchestrator  │                         │
-│                    └───────┬───────┘                         │
-│                            │                                  │
-│         ┌──────────────────┴──────────────────┐            │
-│         │                                       │            │
-│  ┌──────▼──────┐                      ┌───────▼──────┐     │
-│  │   Memory    │                      │   Session    │     │
-│  │   Store     │                      │   Store      │     │
-│  └─────────────┘                      └──────────────┘     │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph "Input Layer"
+        A[User Story] --> B[Orchestrator]
+    end
+    
+    subgraph "Agent Layer"
+        B --> C[Story Planner Loop]
+        C --> D[Memory Retrieval]
+        D --> E[Test Case Generator Loop]
+        E --> F[Global Validator Loop]
+    end
+    
+    subgraph "Memory Layer"
+        D --> G[QAStyleMemory<br/>FAISS Vector DB]
+        H[SessionStore<br/>In-Memory State]
+    end
+    
+    subgraph "Output Layer"
+        F --> I[Structured JSON Output]
+        I --> J[Test Cases]
+        I --> K[Edge Cases]
+        I --> L[Bug Risks]
+        I --> M[Validation Results]
+    end
+    
+    B --> H
+    G --> E
+    H --> I
+    
+    style C fill:#e1f5ff
+    style E fill:#e1f5ff
+    style F fill:#e1f5ff
+    style G fill:#fff4e1
+    style H fill:#fff4e1
 ```
 
-### **Technology Stack**
+---
 
-| Component | Technology |
-|-----------|-----------|
-| **Agent Framework** | Google ADK v1 (Agent Development Kit) |
-| **LLM** | Gemini 2.0 Flash |
-| **Memory** | FAISS (Vector Similarity Search) |
-| **Protocol** | Model Context Protocol (MCP) |
-| **API Framework** | FastAPI + Uvicorn |
-| **Language** | Python 3.9+ |
+## Agent Breakdown
+
+### Story Planner Loop
+
+**Purpose**: Decomposes user stories into structured planning artifacts.
+
+**Input**: User story (title, description, acceptance criteria, QA context)
+
+**Output**: JSON containing:
+- `features`: 3-8 high-level feature categories
+- `scenarios`: Auto-incremented scenarios (SC-1, SC-2, ...) mapped to acceptance criteria
+- `notes`: Domain insights, constraints, and testing considerations
+- `acceptance_criteria_input`: Original acceptance criteria for traceability
+
+**Implementation**: ADK v1 Loop pattern using `ctx.llm.complete()` with Gemini 2.0 Flash. Includes automatic JSON parsing with markdown code block stripping.
+
+### Test Case Generator Loop
+
+**Purpose**: Transforms planner scenarios into executable test cases.
+
+**Input**: Planner output, QA context, similar examples from memory
+
+**Output**: JSON containing:
+- `test_cases`: 1-3 test cases per scenario with Given/When/Then steps
+- `edge_cases`: Boundary condition test scenarios (EC-1, EC-2, ...)
+- `bug_risks`: Potential failure modes and security concerns (BR-1, BR-2, ...)
+- `planner_output`: Original planner output for validation
+
+**Implementation**: Hybrid QA format with Gherkin-style steps. Each test case includes preconditions, actionable steps, and specific expected results. Uses memory-retrieved examples to maintain style consistency.
+
+### Global Validator Loop
+
+**Purpose**: Enterprise-grade validation ensuring cross-agent consistency and quality.
+
+**Input**: Planner output, test case output, QA context
+
+**Output**: JSON validation result:
+- `valid`: Boolean indicating overall pipeline validity
+- `errors`: Critical issues requiring correction
+- `warnings`: Non-blocking quality concerns
+
+**Validation Rules**:
+1. Coverage Completeness: Every scenario maps to ≥1 test case
+2. Step Quality: All test cases have clear Given/When/Then steps
+3. Expected Result Quality: Results are specific and testable
+4. Duplicate Detection: No redundant test cases
+5. Edge Case Alignment: Edge cases are meaningful and related
+6. Consistency: Titles, IDs, and flows match across agents
+7. QA Context Alignment: Test cases reflect QA preferences
 
 ---
 
-## 🚀 Quick Start
+## Memory & Session Layer
 
-### **Prerequisites**
+### QAStyleMemory
+
+FAISS-based vector database storing historical QA patterns. Uses semantic similarity search to retrieve relevant examples during test case generation, enabling style consistency and pattern learning. Stores story metadata, planner outputs, test case outputs, and QA context for future reference.
+
+### SessionStore
+
+In-memory session management tracking per-session state across the pipeline. Maintains planner outputs, test case outputs, and validation results for each session ID, enabling stateful orchestration and result aggregation.
+
+---
+
+## Evaluation Layer
+
+### ConsistencyEvaluator
+
+Rule-based evaluator analyzing test case coverage, step quality, and structural completeness. Validates that all acceptance criteria are addressed and test cases follow specified formats.
+
+### A2AEvaluator
+
+Agent-to-agent meta-evaluator performing deterministic analysis of cross-agent consistency. Validates that planner scenarios align with generated test cases and that validation results accurately reflect pipeline quality.
+
+---
+
+## Orchestrator Flow
+
+The `QASentinelOrchestrator` coordinates the complete pipeline:
+
+1. **Session Initialization**: Creates session in SessionStore with story metadata
+2. **Story Planning**: Invokes StoryPlannerLoop via `loop.Runner`, extracts JSON output
+3. **Memory Retrieval**: Queries QAStyleMemory for top-k similar examples using vector similarity
+4. **Test Case Generation**: Invokes TestCaseGeneratorLoop with planner output and similar examples
+5. **Global Validation**: Invokes GlobalValidatorLoop with planner and test case outputs
+6. **Memory Persistence**: Saves complete pipeline output to QAStyleMemory for future learning
+7. **Result Aggregation**: Returns consolidated JSON with all outputs
+
+Each stage includes robust error handling, JSON extraction with markdown stripping, and session state management.
+
+---
+
+## Tech Stack
+
+| Component | Technology | Version |
+|-----------|-----------|---------|
+| **Agent Framework** | Google ADK | v1.19.0 |
+| **LLM** | Gemini 2.0 Flash | Latest |
+| **Vector Database** | FAISS | CPU variant |
+| **Protocol** | Model Context Protocol | Latest |
+| **API Framework** | FastAPI + Uvicorn | Latest |
+| **Language** | Python | 3.9+ |
+| **Environment** | python-dotenv | Latest |
+
+---
+
+## How to Run
+
+### Prerequisites
 
 - Python 3.9 or higher
-- Google API Key ([Get one here](https://ai.google.dev/))
+- Google API Key ([Obtain here](https://ai.google.dev/))
 
-### **Installation**
+### Installation Steps
 
-1. **Clone the repository**
+1. **Clone Repository**
    ```bash
-   git clone <your-repo-url>
-   cd qa-sentinel
+   git clone https://github.com/MhussainD4772/Capstone-Project-Agentic-AI-.git
+   cd Capstone-Project-Agentic-AI-/qa-sentinel
    ```
 
-2. **Create virtual environment**
+2. **Create Virtual Environment**
    ```bash
    python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**
+3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
 4. **Configure API Key**
    
-   Create a `.env` file in the project root:
+   Create `.env` file:
    ```bash
    echo "GOOGLE_API_KEY=your_api_key_here" > .env
    ```
-   
-   ⚠️ **Note**: The `.env` file is already in `.gitignore` to protect your API key.
 
-5. **Run the pipeline**
+5. **Execute Pipeline**
    ```bash
    python main.py
    ```
 
-### **Expected Output**
+### Expected Execution Flow
 
 ```
 Running QA Sentinel pipeline...
 Session ID: session-demo-1
 Title: User updates profile information
 
+[Story Planner Loop executing...]
+[Test Case Generator Loop executing...]
+[Global Validator Loop executing...]
+
 ================================================================================
 Pipeline Results:
 ================================================================================
-{
-  "session_id": "session-demo-1",
-  "planner_output": { ... },
-  "testcase_output": { ... },
-  "global_validation_output": { ... }
-}
+{ ... structured JSON output ... }
 ```
 
 ---
 
-## 📂 Project Structure
+## Folder Structure
 
 ```
 qa-sentinel/
 │
-├── 🤖 agents/
-│   ├── story_planner_agent.py          # Story planning loop (ADK v1)
-│   ├── testcase_generator_agent.py     # Test case generation loop
-│   ├── global_validator_agent.py       # Global validation loop
-│   ├── orchestrator_agent.py           # Pipeline orchestrator
-│   └── adk_v1_compat.py                # ADK v1 compatibility layer
+├── agents/
+│   ├── adk_v1_compat.py              # ADK v1 compatibility layer
+│   ├── story_planner_agent.py         # Story planning loop
+│   ├── testcase_generator_agent.py    # Test case generation loop
+│   ├── global_validator_agent.py      # Global validation loop
+│   ├── orchestrator_agent.py          # Pipeline orchestrator
+│   ├── automation_scaffold_agent.py  # Automation scaffold (future)
+│   ├── qa_eval_agent.py              # QA evaluation agent
+│   └── qa_validator_agent.py          # QA validation agent
 │
-├── 🛠️ tools/
-│   ├── file_export_mcp.py              # MCP export tools
-│   ├── mcp_file_writer_tool.py
-│   ├── mcp_directory_reader_tool.py
-│   └── mcp_code_runner_tool.py
+├── config/
+│   ├── model_config.py                # Model configuration
+│   └── settings.py                    # Application settings
 │
-├── 🧠 memory/
-│   ├── qa_style_memory.py              # Long-term QA pattern memory
-│   └── session_store.py                # Session state management
+├── deployment/
+│   ├── Dockerfile                     # Container configuration
+│   ├── cloudrun_deploy.md             # Cloud Run deployment guide
+│   └── agent_engine_setup.md         # Agent Engine setup
 │
-├── 📊 observability/
-│   ├── logging_config.py               # Logging configuration
-│   └── tracing.py                      # Performance tracing
+├── evaluation/
+│   ├── consistency_evaluator.py       # Rule-based evaluation
+│   ├── a2a_evaluator.py              # Agent-to-agent evaluation
+│   ├── eval_runner.py                 # Evaluation runner
+│   └── golden_stories.py              # Golden test stories
 │
-├── 📈 evaluation/
-│   ├── consistency_evaluator.py        # Rule-based evaluation
-│   ├── a2a_evaluator.py                # Agent-to-agent evaluation
-│   └── eval_runner.py                  # Evaluation runner
+├── examples/
+│   ├── sample_input_story.md          # Example input story
+│   └── sample_output_tests.md         # Example output
 │
-├── ⚙️ config/
-│   ├── settings.py                     # Application settings
-│   └── model_config.py                 # Model configuration
+├── memory/
+│   ├── qa_style_memory.py             # FAISS-based memory store
+│   └── session_store.py               # Session state management
 │
-├── 📝 examples/
-│   ├── sample_input_story.md           # Example input
-│   └── sample_output_tests.md          # Example output
+├── observability/
+│   ├── logging_config.py              # Logging configuration
+│   └── tracing.py                     # Performance tracing
 │
-├── 🚀 deployment/
-│   ├── Dockerfile                      # Container configuration
-│   ├── cloudrun_deploy.md              # Cloud Run deployment guide
-│   └── agent_engine_setup.md           # Agent Engine setup
+├── tools/
+│   ├── file_export_mcp.py             # MCP export tools
+│   ├── mcp_file_writer_tool.py        # MCP file writer
+│   ├── mcp_directory_reader_tool.py   # MCP directory reader
+│   ├── mcp_code_runner_tool.py        # MCP code runner
+│   ├── code_execution_tool.py         # Code execution tool
+│   └── schema_validator.py            # Schema validation
 │
 ├── main.py                             # Entry point
-├── requirements.txt                    # Python dependencies
-├── .env                                # Environment variables (gitignored)
-└── README.md                           # This file
+├── requirements.txt                   # Python dependencies
+├── .env                               # Environment variables (gitignored)
+├── .gitignore                         # Git ignore rules
+└── README.md                          # This document
 ```
 
 ---
 
-## 🧠 Architecture Details
+## Example Output
 
-### **1. Agents Layer (ADK v1 Compatible)**
-
-All agents use the **Google ADK v1 Loop pattern**:
-
-| Agent | Pattern | Description |
-|-------|---------|-------------|
-| `StoryPlannerLoop` | `loop.Loop` | Breaks stories into features, scenarios, notes |
-| `TestCaseGeneratorLoop` | `loop.Loop` | Generates hybrid manual test cases (Given/When/Then) |
-| `GlobalValidatorLoop` | `loop.Loop` | Enterprise-grade critic ensuring cross-agent consistency |
-
-**Key Features:**
-- ✅ ADK v1 compatible (`loop.Loop` interface)
-- ✅ Automatic JSON parsing with markdown code block stripping
-- ✅ Error handling and retry logic
-- ✅ Context-aware LLM calls via `ctx.llm.complete()`
-
-### **2. Memory Layer**
-
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| `QAStyleMemory` | FAISS + Vector DB | Long-term memory of story patterns & QA style |
-| `SessionStore` | In-memory store | Tracks per-session outputs |
-
-### **3. Orchestrator Layer**
-
-`QASentinelOrchestrator` coordinates:
-- ✅ Session management with `InMemorySessionService`
-- ✅ Memory retrieval for similar examples
-- ✅ Agent invocation via `loop.Runner`
-- ✅ Final aggregation of outputs
-- ✅ Error handling and JSON extraction
-- ✅ Saving results back into memory
-
-### **4. Tools (MCP)**
-
-| Tool | Purpose |
-|------|---------|
-| `save_markdown` | Export planner/testcase results as Markdown |
-| `save_json` | Export structured pipeline outputs |
-
----
-
-## 🔧 Configuration
-
-### **Environment Variables**
-
-Create a `.env` file:
-
-```env
-GOOGLE_API_KEY=your_google_api_key_here
-```
-
-### **Model Configuration**
-
-Default model: `gemini-2.0-flash`
-
-To change the model, update the `model` parameter in:
-- `agents/story_planner_agent.py`
-- `agents/testcase_generator_agent.py`
-- `agents/global_validator_agent.py`
-
----
-
-## 📊 Example Workflow
-
-```mermaid
-graph LR
-    A[User Story] --> B[Story Planner]
-    B --> C[Test Case Generator]
-    C --> D[Global Validator]
-    D --> E[Final Output]
-    
-    B -.-> F[Memory Store]
-    C -.-> F
-    D -.-> F
-    F -.-> C
-```
-
-### **Input Example**
+### Story Planner Output
 
 ```json
 {
-  "title": "User updates profile information",
-  "description": "As a user, I want to update my profile...",
-  "acceptance_criteria": [
+  "features": [
+    "Profile Update - Name",
+    "Profile Update - Email",
+    "Profile Update - Form Validation"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "SC-1",
+      "title": "Update Name Successfully",
+      "acceptance_criteria": "User can update their name",
+      "tags": ["positive", "name"]
+    },
+    {
+      "scenario_id": "SC-2",
+      "title": "Invalid Email Format",
+      "acceptance_criteria": "User receives validation error for invalid email format",
+      "tags": ["negative", "email", "validation"]
+    }
+  ],
+  "notes": [
+    "Consider localization for name field",
+    "Verify email uniqueness if applicable"
+  ],
+  "acceptance_criteria_input": [
     "User can update their name",
     "User can update their email",
     "User receives validation error for invalid email format"
-  ],
-  "qa_context": "Focus on negative testing, usability, and boundary behavior."
+  ]
 }
 ```
 
-### **Output Structure**
+### Test Case Generator Output
 
 ```json
 {
-  "session_id": "session-demo-1",
-  "planner_output": {
-    "features": [...],
-    "scenarios": [...],
-    "notes": [...]
-  },
-  "testcase_output": {
-    "test_cases": [...],
-    "edge_cases": [...],
-    "bug_risks": [...]
-  },
-  "global_validation_output": {
-    "valid": true,
-    "errors": [],
-    "warnings": []
-  }
+  "test_cases": [
+    {
+      "id": "TC-1",
+      "title": "Verify Successful Name Update - SC-1",
+      "preconditions": ["User is logged in"],
+      "steps": [
+        "Given the user is on the profile page",
+        "When the user updates their first name to 'John'",
+        "And the user clicks the 'Save' button",
+        "Then the profile page should display 'John' as the updated name"
+      ],
+      "expected_result": "User's name is successfully updated and displayed on the profile page."
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "EC-1",
+      "description": "Test updating profile with extremely long names. Check for field length limitations."
+    }
+  ],
+  "bug_risks": [
+    {
+      "id": "BR-1",
+      "description": "XSS vulnerability in name or email fields could lead to malicious script injection."
+    }
+  ]
+}
+```
+
+### Global Validator Output
+
+```json
+{
+  "valid": true,
+  "errors": [],
+  "warnings": []
 }
 ```
 
 ---
 
-## 🧪 Running Tests
+## Future Improvements
 
-```bash
-# Run the main pipeline
-python main.py
-
-# Run MCP tool server
-python tools/file_export_mcp.py
-```
+1. **Automated Test Execution**: Integration with test automation frameworks (Selenium, Playwright) to execute generated test cases
+2. **Multi-Model Ensemble**: Leverage multiple LLMs for validation and cross-checking to improve accuracy
+3. **Real-Time Collaboration**: WebSocket-based interface for collaborative QA story refinement
+4. **Advanced Memory Strategies**: Implement RAG (Retrieval-Augmented Generation) with document chunking for larger context windows
+5. **Performance Optimization**: Caching layer for frequently accessed patterns and batch processing for multiple stories
 
 ---
 
-## 🚀 Deployment
+## License
 
-### **Cloud Run Deployment**
-
-See detailed instructions in:
-- [`deployment/cloudrun_deploy.md`](deployment/cloudrun_deploy.md)
-- [`deployment/agent_engine_setup.md`](deployment/agent_engine_setup.md)
-
-### **Docker**
-
-```bash
-docker build -t qa-sentinel -f deployment/Dockerfile .
-docker run -e GOOGLE_API_KEY=your_key qa-sentinel
-```
+MIT License. See LICENSE file for details.
 
 ---
 
-## 🏆 Key Features & Deliverables
+## Repository
 
-- ✅ **Multi-Agent Design** - Three specialized agents working in harmony
-- ✅ **ADK v1 Compatible** - Fully converted to Google ADK v1 Loop pattern
-- ✅ **Validate-Refine Loops** - Self-correcting agent behavior
-- ✅ **A2A Evaluation** - Agent-to-agent meta-evaluation
-- ✅ **Observability Layer** - Comprehensive logging and tracing
-- ✅ **Memory-Augmented Reasoning** - Learns from past patterns
-- ✅ **MCP Export Tools** - Model Context Protocol integration
-- ✅ **Cloud-Ready Architecture** - Ready for Cloud Run deployment
-
----
-
-## 🔒 Security
-
-- ✅ API keys stored in `.env` (gitignored)
-- ✅ No hardcoded credentials
-- ✅ Environment-based configuration
-- ✅ Secure session management
-
----
-
-## 📝 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
----
-
-## 📧 Contact
-
-For questions or issues, please open an issue on GitHub.
+**GitHub**: https://github.com/MhussainD4772/Capstone-Project-Agentic-AI-
 
 ---
 
 <div align="center">
 
-**Built with ❤️ using Google ADK, Gemini, and Python**
-
-⭐ **Star this repo if you find it useful!** ⭐
+**Built with Google ADK v1, Gemini 2.0 Flash, and Python**
 
 </div>

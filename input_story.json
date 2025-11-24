@@ -1,0 +1,12 @@
+{
+  "session_id": "session-1",
+  "title": "User updates profile information",
+  "description": "As a user, I want to update my profile so that I can keep my information current and accurate.",
+  "acceptance_criteria": [
+    "User can update their name",
+    "User can update their email",
+    "User receives validation error for invalid email format"
+  ],
+  "qa_context": "Focus on negative testing, usability, and boundary behavior."
+}
+

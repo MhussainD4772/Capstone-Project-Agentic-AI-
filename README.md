@@ -62,33 +62,75 @@ This creates a **robust, repeatable, high-coverage QA generation pipeline**.
 
 ### High-Level System Architecture
 
-```mermaid
-    "Input"
-        [User Story<br/>Title, Description, AC, QA Context]
-    
-    "Orchestrator Layer"
-        [QASentinelOrchestrator<br/>Session Management & Coordination]
-    
-    "Agent Layer"
-        [Story Planner Loop<br/>ADK v1 Loop]
-        [Test Case Generator Loop<br/>ADK v1 Loop]
-        [Global Validator Loop<br/>ADK v1 Loop]
-    
-    "Memory Layer"
-        [QAStyleMemory<br/>FAISS Vector DB]
-        [SessionStore<br/>In-Memory State]
-    
-    "Evaluation Layer"
-        [ConsistencyEvaluator<br/>Rule-based]
-        [A2AEvaluator<br/>Meta-evaluation]
-    
-    "Export Layer"
-        [MCP Export Server<br/>Markdown & JSON]
-    
-    "Output"
-        [Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
+The QA Sentinel system is composed of the following layers:
 
-```
+---
+
+### 📥 Input Layer
+**User Story Input**
+- Title  
+- Description  
+- Acceptance Criteria  
+- QA Context  
+
+---
+
+### 🧠 Orchestrator Layer
+**QASentinelOrchestrator**
+- Manages the full pipeline  
+- Coordinates all agents  
+- Handles session state, retries, and JSON extraction  
+- Controls execution order  
+
+---
+
+### 🤖 Agent Layer (Powered by Google ADK Loop)
+**Story Planner Loop**
+- Breaks story → features, scenarios, notes  
+
+**Test Case Generator Loop**
+- Generates test cases, edge cases, bug risks  
+
+**Global Validator Loop**
+- Validates cross-agent consistency and quality  
+
+---
+
+### 🧠 Memory Layer
+**QAStyleMemory**
+- Stores planner + testcase examples  
+- Similarity search via FAISS  
+
+**SessionStore**
+- Tracks end-to-end pipeline state  
+
+---
+
+### 🧪 Evaluation Layer
+**ConsistencyEvaluator**
+- Rule-based scoring (coverage, GWT quality, structure)  
+
+**A2AEvaluator**
+- Deterministic meta evaluation  
+- Produces reasoning, recommendations, metrics  
+
+---
+
+### 📤 Export Layer
+**MCP File Export Server**
+- Saves outputs as JSON / Markdown  
+- Enables tool-based interoperability  
+
+---
+
+### 📦 Output
+- Structured Planner Output  
+- Full Test Case Suite  
+- Edge Cases  
+- Bug Risks  
+- Global Validation Result  
+
+---\\\
 
 ---
 

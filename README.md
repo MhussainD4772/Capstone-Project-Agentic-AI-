@@ -130,8 +130,6 @@ The QA Sentinel system is composed of the following layers:
 - Bug Risks  
 - Global Validation Result  
 
----\\\
-
 ---
 
 ## 🛠️ Agents Breakdown

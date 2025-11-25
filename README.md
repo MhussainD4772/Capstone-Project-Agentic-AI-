@@ -312,8 +312,12 @@ GOOGLE_API_KEY=your_key_here
 ### 4. Run Pipeline
 
 ```bash
-python main.py
+python main_interactive.py
 ```
+
+**What happens next:**
+- `It will ask for User story title, Description, Acceptance Criteria and QA context.`
+- `Then the pipeline will run and you will get the complete output.`
 
 **Outputs will be saved in:**
 - `exports/markdown/`

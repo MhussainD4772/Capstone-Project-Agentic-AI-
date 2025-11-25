@@ -1,34 +1,60 @@
-# 🛡️ QA Sentinel — Multi-Agent QA Pipeline
+# 🧠 QA Sentinel – Multi-Agent Test Case Generation System  
+Google × Kaggle — Agentic AI Intensive (Capstone Project)
 
-**Google ADK + Gemini + MCP**
+QA Sentinel is a fully automated, production-style **multi-agent QA pipeline** powered by **Google’s Agent Development Kit (ADK)** and **Gemini models**.  
 
-A fully automated multi-agent QA system that transforms a user story into:
+It converts a user story into a complete QA package:  
+Features → Scenarios → Test Cases → Edge Cases → Bug Risks → Validation.
 
-✅ Structured features  
-✅ Complete test scenarios  
-✅ High-quality manual test cases  
-✅ Validation feedback  
+---
+## 📌 Problem Statement
 
-— all orchestrated end-to-end using Google Agent Development Kit (ADK), Gemini models, LoopAgent validation, and MCP export tools.
+Manually generating QA assets is slow, inconsistent, and error-prone.  
+QA teams must:
+- Interpret vague user stories  
+- Break them into features & scenarios  
+- Ensure acceptance criteria coverage  
+- Write structured Given/When/Then test cases  
+- Perform quality checks across multiple outputs  
 
-**Built for Kaggle Agents Intensive (Capstone Project)**
+This process is repetitive and leads to:
+- Coverage gaps  
+- Inconsistent structure  
+- Validation overhead  
+- Slower QA cycles  
 
-Architected for clarity, robustness, reproducibility, and real-world QA workflows.
+We needed a system that automates this entire workflow with consistency and quality.
 
 ---
 
-## 🚀 Overview
+## 🚀 Solution Overview
 
-QA Sentinel is a production-grade agentic system designed to automate the entire QA planning workflow used in software development:
+**QA Sentinel** automates end-to-end QA planning using a coordinated set of AI agents.
 
-- **Planner Agent**: Breaks the story into features, scenarios, and acceptance-criteria mappings.
-- **Test Case Generator Agent**: Generates Given/When/Then style manual test cases, edge cases, and bug risks.
-- **Global Validator Agent**: Evaluates overall quality, alignment, structure, and consistency.
-- **Orchestrator**: Manages pipeline execution, handles state, validates all ADK loop events, and ensures fully deterministic output.
-- **Memory Layer (FAISS + JSON store)**: Retrieves similar past stories to improve future test-case generation.
-- **Export Layer (MCP Server)**: Saves Markdown and JSON files from inside the ADK runtime to `/exports/...`.
+The system performs:
 
-This system mirrors how a real QA team works — but fully automated.
+### ✔ Story Analysis & Decomposition  
+Breaks user stories into features, scenarios, insights.
+
+### ✔ Automated Test Case Generation  
+Produces structured test cases with GWT steps, preconditions, and expected results.
+
+### ✔ Edge Case & Bug Risk Discovery  
+Expands test coverage intelligently.
+
+### ✔ Multi-Agent Validation  
+Ensures correctness of scenarios, structure, coverage, and alignment.
+
+### ✔ Memory-Augmented Reasoning  
+Uses FAISS vector memory to improve future outputs.
+
+### ✔ Deterministic Evaluation  
+Consistency scoring + A2A (Agent-to-Agent) meta-evaluation.
+
+### ✔ MCP Output Tools  
+Exports results as JSON/Markdown for real QA workflow usage.
+
+This creates a **robust, repeatable, high-coverage QA generation pipeline**.
 
 ---
 
@@ -37,41 +63,31 @@ This system mirrors how a real QA team works — but fully automated.
 ### High-Level System Architecture
 
 ```mermaid
-graph TB
-    subgraph "Input"
-        A[User Story<br/>Title, Description, AC, QA Context]
-    end
+    "Input"
+        [User Story<br/>Title, Description, AC, QA Context]
     
-    subgraph "Orchestrator Layer"
-        B[QASentinelOrchestrator<br/>Session Management & Coordination]
-    end
+    "Orchestrator Layer"
+        [QASentinelOrchestrator<br/>Session Management & Coordination]
     
-    subgraph "Agent Layer"
-        C[Story Planner Loop<br/>ADK v1 Loop]
-        D[Test Case Generator Loop<br/>ADK v1 Loop]
-        E[Global Validator Loop<br/>ADK v1 Loop]
-    end
+    "Agent Layer"
+        [Story Planner Loop<br/>ADK v1 Loop]
+        [Test Case Generator Loop<br/>ADK v1 Loop]
+        [Global Validator Loop<br/>ADK v1 Loop]
     
-    subgraph "Memory Layer"
-        F[QAStyleMemory<br/>FAISS Vector DB]
-        G[SessionStore<br/>In-Memory State]
-    end
+    "Memory Layer"
+        [QAStyleMemory<br/>FAISS Vector DB]
+        [SessionStore<br/>In-Memory State]
     
-    subgraph "Evaluation Layer"
-        H[ConsistencyEvaluator<br/>Rule-based]
-        I[A2AEvaluator<br/>Meta-evaluation]
-    end
+    "Evaluation Layer"
+        [ConsistencyEvaluator<br/>Rule-based]
+        [A2AEvaluator<br/>Meta-evaluation]
     
-    subgraph "Export Layer"
-        J[MCP Export Server<br/>Markdown & JSON]
-    end
+    "Export Layer"
+        [MCP Export Server<br/>Markdown & JSON]
     
-    subgraph "Output"
-        K[Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
-    end
+    "Output"
+        [Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
     
-    
-
 
 At a high level, the system consists of:
 
@@ -86,7 +102,7 @@ Everything is modular, reusable, and extendable.
 
 ---
 
-## 🛠️ Components
+## 🛠️ Agents Breakdown
 
 ### 1. Story Planner (LoopAgent)
 
@@ -195,30 +211,43 @@ Used for Kaggle scoring alignment.
 
 ---
 
-## 📦 MCP Export Tool
+## 🧰 Tools & Utilities
 
-MCP server provides tools:
-- `save_markdown(filename, content)`
-- `save_json(filename, data)`
+### 🔹 MCP File Export Tool
+Saves pipeline outputs as:
+- JSON  
+- Markdown  
 
-**Agents can export:**
-- Final test case bundles
-- Planner outputs
-- Validation reports
-- Full pipeline dumps
+### 🔹 Logging Layer
+- Rotating logs  
+- Structured console logs  
+- Time-stamped events  
 
-**Saved under:**
-```
-exports/
-  └── markdown/
-  └── json/
-```
+### 🔹 Tracing Module
+- Measures stage duration  
+- Logs start/end of each phase  
+
+### 🔹 Session Store
+Tracks:
+- planner_output  
+- testcase_output  
+- validator_output  
+
+### 🔹 FAISS Vector Memory
+Stores:
+- titles  
+- acceptance criteria  
+- planner + test case output  
+Used for similarity-based retrieval.
+
+### 🔹 JSON Extractor
+Ensures ADK event parsing is robust.
 
 ---
 
 ## 📂 Project Structure
 
-```
+``
 qa-sentinel/
 │
 ├── agents/
@@ -262,7 +291,7 @@ qa-sentinel/
 ├── .env
 ├── LICENSE
 └── README.md
-```
+``
 
 ---
 

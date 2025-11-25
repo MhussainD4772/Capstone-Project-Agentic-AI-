@@ -70,27 +70,7 @@ graph TB
         K[Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
     end
     
-    A --> B
-    B --> C
-    C --> F
-    F --> D
-    C --> D
-    D --> E
-    E --> H
-    E --> I
-    B --> G
-    G --> K
-    E --> K
-    K --> J
     
-    style C fill:#4A90E2,color:#fff
-    style D fill:#4A90E2,color:#fff
-    style E fill:#4A90E2,color:#fff
-    style F fill:#F5A623,color:#fff
-    style G fill:#F5A623,color:#fff
-    style B fill:#50E3C2,color:#000
-    style J fill:#7ED321,color:#000
-```
 
 
 At a high level, the system consists of:

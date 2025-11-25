@@ -247,7 +247,7 @@ Ensures ADK event parsing is robust.
 
 ## 📂 Project Structure
 
-``
+```
 qa-sentinel/
 │
 ├── agents/
@@ -291,7 +291,7 @@ qa-sentinel/
 ├── .env
 ├── LICENSE
 └── README.md
-``
+```
 
 ---
 

@@ -58,210 +58,124 @@ This creates a **robust, repeatable, high-coverage QA generation pipeline**.
 
 ---
 
-## 🧩 System Architecture
+# 🧩 System Architecture
 
-### High-Level System Architecture
+## High-Level System Architecture
 
 ```mermaid
-    "Input"
-        [User Story<br/>Title, Description, AC, QA Context]
-    
-    "Orchestrator Layer"
-        [QASentinelOrchestrator<br/>Session Management & Coordination]
-    
-    "Agent Layer"
-        [Story Planner Loop<br/>ADK v1 Loop]
-        [Test Case Generator Loop<br/>ADK v1 Loop]
-        [Global Validator Loop<br/>ADK v1 Loop]
-    
-    "Memory Layer"
-        [QAStyleMemory<br/>FAISS Vector DB]
-        [SessionStore<br/>In-Memory State]
-    
-    "Evaluation Layer"
-        [ConsistencyEvaluator<br/>Rule-based]
-        [A2AEvaluator<br/>Meta-evaluation]
-    
-    "Export Layer"
-        [MCP Export Server<br/>Markdown & JSON]
-    
-    "Output"
-        [Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
+flowchart TD
+    A[User Story Input<br/>Title, Description, AC, QA Context]
+    B[QASentinel Orchestrator<br/>Session Management & Coordination]
+    C1[Story Planner Loop<br/>ADK v1 Loop]
+    C2[Test Case Generator Loop<br/>ADK v1 Loop]
+    C3[Global Validator Loop<br/>ADK v1 Loop]
+    D1[QAStyleMemory<br/>FAISS Vector DB]
+    D2[SessionStore<br/>In-Memory State]
+    E1[ConsistencyEvaluator<br/>Rule-based]
+    E2[A2AEvaluator<br/>Meta-evaluation]
+    F[MCP Export Server<br/>Markdown & JSON]
+    G[Final Output<br/>Test Cases, Edge Cases, Bug Risks, Validation]
 
-    
-
-At a high level, the system consists of:
-	•	ADK Loop Agents - Three specialized agents using Google ADK v1 Loop pattern
-	•	Gemini models - For all LLM tasks (Gemini 2.0 Flash)
-	•	Custom Orchestrator - Manages pipeline execution and state
-	•	Consistency & A2A Evaluators - Deterministic quality assessment
-	•	MCP File Export Server - Model Context Protocol integration
-	•	Vector-based Memory Layer - FAISS for pattern learning
-
-Everything is modular, reusable, and extendable.
-
-⸻
-
-🛠️ Agents Breakdown
-
-1. Story Planner (LoopAgent)
-
-Breaks the story into:
-	•	Features: 3-8 high-level feature categories
-	•	Structured scenarios: Auto-incremented (SC-1, SC-2…)
-	•	Acceptance criteria mapping: Ensures every AC is mapped to scenarios
-	•	Notes/insights: Domain considerations for QA
-
-Validation ensures:
-	•	✅ Every AC is mapped
-	•	✅ Features list is non-empty
-	•	✅ JSON structure is strict
-
-Implementation:
-ADK v1 Loop pattern using ctx.llm.complete() with Gemini 2.0 Flash.
-Includes automatic JSON parsing with markdown code block stripping.
-
-⸻
-
-2. Test Case Generator (LoopAgent)
-
-Generates for each scenario:
-	•	1-3 high-quality test cases with:
-	•	Preconditions
-	•	Given/When/Then steps
-	•	Expected result
-	•	Edge cases: Boundary condition scenarios (EC-1, EC-2…)
-	•	Bug risks: Potential failure modes and security concerns (BR-1, BR-2…)
-
-Validation ensures:
-	•	✅ Tests reference scenarios
-	•	✅ Each test case includes Given + When + Then
-	•	✅ Expected result exists
-	•	✅ All scenarios are covered
-
-Implementation:
-Hybrid QA format with Gherkin-style steps.
-Uses memory-retrieved examples to maintain style consistency.
-
-⸻
-
-3. Global Validator Agent
-
-Checks:
-	•	✅ Cross-agent consistency
-	•	✅ Missing scenarios
-	•	✅ Missing test cases
-	•	✅ Logical alignment
-	•	✅ JSON shape correctness
-
-Validation Rules:
-	1.	Coverage Completeness: Every scenario maps to ≥1 test case
-	2.	Step Quality: All test cases have clear Given/When/Then steps
-	3.	Expected Result Quality: Results are specific and testable
-	4.	Duplicate Detection: No redundant test cases
-	5.	Edge Case Alignment: Edge cases are meaningful and related
-	6.	Consistency: Titles, IDs, and flows match across agents
-	7.	QA Context Alignment: Test cases reflect QA preferences
-
-⸻
-
-4. Orchestrator
-
-The orchestrator:
-	•	✅ Sends ADK messages to each agent
-	•	✅ Handles retries, validation, and state delta
-	•	✅ Extracts JSON safely from LoopAgent events
-	•	✅ Generates outputs with timestamps
-	•	✅ Logs everything using the observability layer
-
-It guarantees the pipeline never produces broken output.
-
-⸻
-
-🧠 Memory Layer (FAISS)
-
-The Memory Layer stores:
-	•	Story title
-	•	Acceptance criteria
-	•	Planner output
-	•	Testcase output
-
-Uses:
-	•	FAISS vector search
-	•	Title embeddings
-	•	Top-K retrieval for similarity
-
-Used by TestCaseGenerator to write smarter, more consistent test cases.
-
-⸻
-
-📝 Evaluation Layer (Deterministic)
-
-Two evaluators:
-
-✔️ ConsistencyEvaluator
-
-Scores:
-	•	Scenario coverage
-	•	GWT (Given/When/Then) structure
-	•	Scenario referencing
-	•	Planner–testcase structural validity
-
-✔️ A2AEvaluator (Agent-to-Agent Meta Evaluation)
-
-Mimics “agent reviewing another agent” using deterministic rules.
-
-Produces:
-	•	Component scores
-	•	Qualitative reasoning
-	•	Recommendations
-	•	Coverage metrics
-
-Used for Kaggle scoring alignment.
-
-⸻
-
-🧰 Tools & Utilities
-
-🔹 MCP File Export Tool
-
-Saves pipeline outputs as:
-	•	JSON
-	•	Markdown
-
-🔹 Logging Layer
-	•	Rotating logs
-	•	Structured console logs
-	•	Time-stamped events
-
-🔹 Tracing Module
-	•	Measures stage duration
-	•	Logs start/end of each phase
-
-🔹 Session Store
-
-Tracks:
-	•	planner_output
-	•	testcase_output
-	•	validator_output
-
-🔹 FAISS Vector Memory
-
-Stores:
-	•	titles
-	•	acceptance criteria
-	•	planner + test case output
-Used for similarity-based retrieval.
-
-🔹 JSON Extractor
-
-Ensures ADK event parsing is robust.
-
+```
 
 ---
 
-📂 Project Structure
+## 🛠️ Agents Breakdown
 
+### 1. Story Planner (LoopAgent)
+Breaks the story into:
+- Features (3–8 items)
+- Structured scenarios (SC-1, SC-2…)
+- AC mapping
+- Notes & insights
+
+Validation ensures:
+- Non‑empty features
+- Every AC has ≥1 scenario
+- Strict JSON formatting
+
+---
+
+### 2. Test Case Generator (LoopAgent)
+Generates:
+- 1–3 test cases per scenario  
+- Preconditions  
+- Gherkin Given/When/Then steps  
+- Expected results  
+- Edge cases  
+- Bug risks  
+
+Validation ensures:
+- All scenarios referenced
+- G/W/T structure exists
+- Expected result exists
+
+---
+
+### 3. Global Validator Agent
+Checks:
+- Coverage completeness  
+- Step quality  
+- Logical flow  
+- Missing scenarios/tests  
+- JSON structure  
+
+---
+
+## 🧠 Memory Layer (FAISS)
+Stores:
+- Title  
+- AC  
+- Planner output  
+- Test case output  
+
+Used for:
+- Similar test case pattern retrieval  
+- Style consistency  
+
+---
+
+## 📝 Evaluation Layer
+### ✔ ConsistencyEvaluator
+Rule-based scoring of:
+- Scenario coverage  
+- GWT structure  
+- Scenario reference  
+- Output structure  
+
+### ✔ A2AEvaluator  
+Simulates agent-to-agent evaluation:
+- Component scores  
+- Reasoning  
+- Recommendations  
+- Metrics  
+
+---
+
+## 🧰 Tools & Utilities
+
+### MCP File Export Tool
+- Saves JSON  
+- Saves Markdown  
+
+### Logging Layer
+- Rotating logs  
+- Structured timestamps  
+
+### Tracing Module
+- Tracks duration of each stage  
+
+### SessionStore
+- Tracks planner/testcase/validator outputs  
+
+### JSON Extractor
+- Robust ADK event parsing  
+
+---
+
+## 📂 Project Structure
+
+```
 qa-sentinel/
 │
 ├── agents/
@@ -305,15 +219,15 @@ qa-sentinel/
 ├── .env
 ├── LICENSE
 └── README.md
+```
 
----
+## 🧪 How to Run Locally
 
-🧪 How to Run Locally
-
-1. Create Virtual Environment
-
+### 1. Create Virtual Environment
+```bash
 python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate
+```
 
 ### 2. Install Dependencies
 

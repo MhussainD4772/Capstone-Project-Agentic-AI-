@@ -58,23 +58,35 @@ This creates a **robust, repeatable, high-coverage QA generation pipeline**.
 
 ---
 
-# 🧩 System Architecture
+## 🧩 System Architecture
 
-## High-Level System Architecture
+### High-Level System Architecture
 
 ```mermaid
-flowchart TD
-    A[User Story Input<br/>Title, Description, AC, QA Context]
-    B[QASentinel Orchestrator<br/>Session Management & Coordination]
-    C1[Story Planner Loop<br/>ADK v1 Loop]
-    C2[Test Case Generator Loop<br/>ADK v1 Loop]
-    C3[Global Validator Loop<br/>ADK v1 Loop]
-    D1[QAStyleMemory<br/>FAISS Vector DB]
-    D2[SessionStore<br/>In-Memory State]
-    E1[ConsistencyEvaluator<br/>Rule-based]
-    E2[A2AEvaluator<br/>Meta-evaluation]
-    F[MCP Export Server<br/>Markdown & JSON]
-    G[Final Output<br/>Test Cases, Edge Cases, Bug Risks, Validation]
+    "Input"
+        [User Story<br/>Title, Description, AC, QA Context]
+    
+    "Orchestrator Layer"
+        [QASentinelOrchestrator<br/>Session Management & Coordination]
+    
+    "Agent Layer"
+        [Story Planner Loop<br/>ADK v1 Loop]
+        [Test Case Generator Loop<br/>ADK v1 Loop]
+        [Global Validator Loop<br/>ADK v1 Loop]
+    
+    "Memory Layer"
+        [QAStyleMemory<br/>FAISS Vector DB]
+        [SessionStore<br/>In-Memory State]
+    
+    "Evaluation Layer"
+        [ConsistencyEvaluator<br/>Rule-based]
+        [A2AEvaluator<br/>Meta-evaluation]
+    
+    "Export Layer"
+        [MCP Export Server<br/>Markdown & JSON]
+    
+    "Output"
+        [Structured JSON<br/>Test Cases, Edge Cases,<br/>Bug Risks, Validation]
 
 ```
 
